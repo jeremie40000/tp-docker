@@ -30,6 +30,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - name: Build :latest
         if: success()
         run: docker build -t jeremie3407/tpdocker -f docker/Dockerfile .
