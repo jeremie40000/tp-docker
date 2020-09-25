@@ -11,7 +11,12 @@ jobs:
     name: Lint code base
     # Set the type of machine to run on
     runs-on: ubuntu-latest
-
+    steps:
+        - uses: actions/checkout@v2
+        - name: Build the stack
+          run: docker-compose up -d
+        - name: Test
+          run: docker-compose up
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
