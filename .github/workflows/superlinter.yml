@@ -6,6 +6,7 @@ on: [push]
 jobs:
   github:
     runs-on: ubuntu-latest
+    container: openjdk:11-jdk
     
     services:
       postgres:
