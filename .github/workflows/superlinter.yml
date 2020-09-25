@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew assemble
       
       - name: Test jar
-        run: ./gradlew check -Pdatabase.url=127.0.0.1/postgres
+        run: ./gradlew check -Pdatabase.url=postgres/tp_devops
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: localhost
