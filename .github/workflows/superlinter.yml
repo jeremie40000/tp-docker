@@ -1,30 +1,35 @@
-name: PostgreSQL service example
-on: push
+
+name: Docker registry
+
+on: [push]
 
 jobs:
-  # Label of the container job
-  container-job:
-    # Containers must run in Linux based operating systems
-    runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
-
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+  github:
+    runs-on: ubuntu-latest    
     steps:
-        - uses: actions/checkout@v2
-        - run: ./gradlew check
+      - uses: actions/checkout@v1
+        
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.2
+        with:
+          # The Java version to make available on the path. Takes a whole or semver Java version, or 1.x syntax (e.g. 1.8 => Java 8.x). Early access versions can be specified in the form of e.g. 14-ea, 14.0.0-ea, or 14.0.0-ea.28
+          java-version: 11
+        
+      - name: Compile jar
+        run: ./gradlew assemble
+        
+      - name: Build :latest
+        if: success()
+        run: docker build -t jeremie3407/tpdocker .
+
+      - name: Login to github registry
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Push to docker hub :latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push jeremie3407/tpdocker
