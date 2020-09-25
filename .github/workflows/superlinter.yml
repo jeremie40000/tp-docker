@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew assemble
       
       - name: Test jar
-        run: ./gradlew check -Pdatabase.url=postgres/tp_devops
+        run: ./gradlew check -Pdatabase.url=postgres/tp_devops -i
         
       - name: Build :latest
         if: success()
