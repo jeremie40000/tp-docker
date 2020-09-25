@@ -1,25 +1,50 @@
-name: Super-Linter
 
-# Run this workflow every time a new commit pushed to your repository
-on: push
+name: Docker registry
+
+on: [push]
 
 jobs:
-  # Set the job key. The key is displayed as the job name
-  # when a job name is not provided
-  super-lint:
-    # Name the Job
-    name: Lint code base
-    # Set the type of machine to run on
+  github:
     runs-on: ubuntu-latest
-
-    steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Runs the Super-Linter action
-      - name: Run Super-Linter
-        uses: github/super-linter@v3
+    container: openjdk:11-jdk
+    
+    services:
+      postgres:
+        image: postgres
+        # Provide the password for postgres
+        ports:
+          - "5432:5432"
         env:
-          DEFAULT_BRANCH: master
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          POSTGRES_PASSWORD: tp_devops
+          POSTGRES_USER: tp_devops
+          POSTGRES_DB: tp_devops
+    
+    steps:
+      - uses: actions/checkout@v1
+        
+      - name: Test jar
+        run: ./gradlew check -Pdatabase.url=postgres:5432/tp_devops -i
+      
+      - name: Compile jar
+        run: ./gradlew assemble
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Compile jar
+        run: ./gradlew assemble
+      - name: Build :latest
+        if: success()
+        run: docker build -t jeremie3407/tpdocker -f docker/Dockerfile .
+
+      - name: Login to github registry
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Push to docker hub :latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push jeremie3407/tpdocker
