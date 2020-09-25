@@ -1,0 +1,19 @@
+version: "3"
+services:
+  db:
+    image: "postgres"
+    container_name: "my_container"
+    environment:
+      - POSTGRES_USER=tp_devops
+      - POSTGRES_PASSWORD=tp_devops
+      - POSTGRES_DB=tp_devops
+    ports:
+      - "5432:5432"
+  app:
+    image: "tpdocker"
+    environment:
+      username: "tp_devops"
+      password: "tp_devops"
+      url: "db:5432/tp_devops"
+    ports:
+      - "8080:8080"

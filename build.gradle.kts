@@ -3,7 +3,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
     kotlin("jvm") version "1.3.50"
+    id("com.bmuschko.docker-remote-api") version "6.6.1"
 }
+
+// Import task types
+import com.bmuschko.gradle.docker.tasks.image.*
+
+
+//docker {
+  //  javaApplication {
+    //    baseImage.​set​(​"openjdk"​)
+      //  ports.​set​(listOf(​8080​, ​5432​))
+        //tag.​set​(​"tpdocker"​)
+    //}
+//}
 
 group = "dev.gleroy.devops.tp-docker"
 version = "1.0.0"
@@ -67,8 +80,17 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    systemProperties(mapOf(
+	"database.username" to project.property("database.username"),
+	"database.password" to project.property("database.password"),
+	"database.url" to project.property("database.url")	
+    ))
 }
 
 tasks.withType<Wrapper> {
     gradleVersion = "5.6"
+}
+
+task<Exec>("createImage") {
+	commandLine("sudo docker build -t jeremie3407/tpdocker -f docker/Dockerfile .".split(" "))
 }
