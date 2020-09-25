@@ -20,7 +20,7 @@ jobs:
         
       - name: Build :latest
         if: success()
-        run: docker build -t jeremie3407/tpdocker .
+        run: docker build -t jeremie3407/tpdocker -f docker/Dockerfile .
 
       - name: Login to github registry
         uses: actions-hub/docker/login@master
