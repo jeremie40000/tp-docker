@@ -10,6 +10,9 @@ jobs:
     services:
       postgres:
         image: postgres
+        # Provide the password for postgres
+        ports:
+          - "5432:5432"
         env:
           POSTGRES_PASSWORD: tp_devops
           POSTGRES_USER: tp_devops
@@ -18,14 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         
-      - name: Setup Java JDK
-        uses: actions/setup-java@v1.4.2
-        with:
+      #- name: Setup Java JDK
+       # uses: actions/setup-java@v1.4.2
+        #with:
           # The Java version to make available on the path. Takes a whole or semver Java version, or 1.x syntax (e.g. 1.8 => Java 8.x). Early access versions can be specified in the form of e.g. 14-ea, 14.0.0-ea, or 14.0.0-ea.28
-          java-version: 11
+         # java-version: 11
       
       - name: Test jar
-        run: ./gradlew check -Pdatabase.url=postgres/tp_devops -i
+        run: ./gradlew check -Pdatabase.url=postgres:5432/tp_devops -i
       
       - name: Compile jar
         run: ./gradlew assemble
