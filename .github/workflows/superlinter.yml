@@ -35,6 +35,12 @@ jobs:
       
       - name: Test jar
         run: ./gradlew check
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: localhost
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+
         
       - name: Build :latest
         if: success()
