@@ -32,6 +32,9 @@ jobs:
         
       - name: Compile jar
         run: ./gradlew assemble
+      
+      - name: Test jar
+        run: ./gradlew check
         
       - name: Build :latest
         if: success()
